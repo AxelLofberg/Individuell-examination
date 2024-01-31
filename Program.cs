@@ -2,42 +2,49 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using System.Text;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 app.UseRouting();
 
-// Krypteringsfunktion med Leet Speak
-string LeetSpeak(string text)
+// Krypteringsfunktion med Rövarspråk
+string ToRovarsprak(string text)
 {
-    text = text.Replace("e", "3");
-    text = text.Replace("o", "0");
-    text = text.Replace("l", "1");
-    text = text.Replace("t", "7");
-    text = text.Replace("a", "4");
-    return text;
+    char[] vowels = { 'a', 'e', 'i', 'o', 'u', 'y', 'å', 'ä', 'ö', 'A', 'E', 'I', 'O', 'U', 'Y', 'Å', 'Ä', 'Ö' };
+    var result = new System.Text.StringBuilder();
+
+    foreach (char c in text)
+    {
+        result.Append(c);
+
+        if (Array.IndexOf(vowels, c) != -1)
+        {
+            result.Append('o');
+            result.Append(char.ToLower(c));
+        }
+    }
+
+    return result.ToString();
 }
 
-// Endpoint för att kryptera
 app.MapPost("/encrypt", async (HttpContext context) =>
 {
-    using var reader = new System.IO.StreamReader(context.Request.Body);
+    using var reader = new StreamReader(context.Request.Body);
     var requestBody = await reader.ReadToEndAsync();
-    var encryptedText = LeetSpeak(requestBody);
+    var encryptedText = ToRovarsprak(requestBody);
 
-    await context.Response.WriteAsync($"Encrypted Text: {encryptedText}");
+    context.Response.ContentType = "text/plain";
+    await context.Response.WriteAsync(encryptedText);
 });
 
-// Endpoint för att avkryptera
-app.MapPost("/decrypt", async (HttpContext context) =>
+app.MapGet("/", async (HttpContext context) =>
 {
-    using var reader = new System.IO.StreamReader(context.Request.Body);
-    var requestBody = await reader.ReadToEndAsync();
-    var decryptedText = LeetSpeak(requestBody);
-
-    await context.Response.WriteAsync($"Decrypted Text: {decryptedText}");
+    var htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "index.html");
+    var htmlContent = await File.ReadAllTextAsync(htmlFilePath);
+    context.Response.ContentType = "text/html";
+    await context.Response.WriteAsync(htmlContent);
 });
 
 app.Run();

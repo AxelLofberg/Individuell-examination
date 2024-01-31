@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rövarspråk Encryptor</title>
+</head>
+<body>
+    <h1>Rövarspråk Encryptor</h1>
+
+    <form id="encryptForm">
+        <label for="inputText">Enter Text:</label>
+        <input type="text" id="inputText" name="inputText" required>
+
+        <button type="button" onclick="encryptText()">Encrypt</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        function encryptText() {
+            var inputText = document.getElementById("inputText").value;
+
+            // Skicka en POST-förfrågan till /encrypt endpoint med användarens inmatning
+            fetch('/encrypt', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain'
+                },
+                body: inputText
+            })
+            .then(response => response.text())
+            .then(encryptedText => {
+                // Visa det krypterade resultatet
+                document.getElementById("result").innerText = 'Encrypted Text: ' + encryptedText;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("result").innerText = 'Error occurred.';
+            });
+        }
+    </script>
+</body>
+</html>
