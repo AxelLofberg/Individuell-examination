@@ -2,43 +2,92 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rövarspråk Encryptor</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle, #ffffff, #302f2f);
+        }
+
+        #encrypt-form {
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2077b3;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #e6e6e6;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <h1>Rövarspråk Encryptor</h1>
-
-    <form id="encryptForm">
-        <label for="inputText">Enter Text:</label>
-        <input type="text" id="inputText" name="inputText" required>
-
-        <button type="button" onclick="encryptText()">Encrypt</button>
-    </form>
-
-    <div id="result"></div>
+    <div id="encrypt-form">
+        <label for="text">Rövarspråksöversättare:</label>
+        <input type="text" id="text" name="text" required>
+        <button onclick="encryptText()">Översätt</button>
+        <div id="result"></div>
+    </div>
 
     <script>
-        function encryptText() {
-            var inputText = document.getElementById("inputText").value;
+        async function encryptText() {
+            const textInput = document.getElementById('text');
+            const resultDiv = document.getElementById('result');
 
-            // Skicka en POST-förfrågan till /encrypt endpoint med användarens inmatning
-            fetch('/encrypt', {
+            const response = await fetch('/encrypt', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'text/plain'
                 },
-                body: inputText
-            })
-            .then(response => response.text())
-            .then(encryptedText => {
-                // Visa det krypterade resultatet
-                document.getElementById("result").innerText = 'Encrypted Text: ' + encryptedText;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById("result").innerText = 'Error occurred.';
+                body: textInput.value
             });
+
+            const data = await response.text();
+            resultDiv.innerText = `Rövarspråk: ${data}`;
         }
     </script>
 </body>
