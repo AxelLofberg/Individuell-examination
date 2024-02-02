@@ -39,6 +39,8 @@ app.MapPost("/encrypt", async (HttpContext context) =>
     await context.Response.WriteAsync(encryptedText);
 });
 
+// Kommentera ut eller ta bort detta block för att inte hantera "/"
+/*
 app.MapGet("/", async (HttpContext context) =>
 {
     var htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "index.html");
@@ -46,5 +48,6 @@ app.MapGet("/", async (HttpContext context) =>
     context.Response.ContentType = "text/html";
     await context.Response.WriteAsync(htmlContent);
 });
+*/
 
 app.Run();
